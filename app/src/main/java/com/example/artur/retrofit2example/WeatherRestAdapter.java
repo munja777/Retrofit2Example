@@ -10,18 +10,17 @@ import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class WeatherRestAdapter {
+class WeatherRestAdapter {
 
-    protected final String TAG = getClass().getSimpleName();
-    protected Retrofit mRestAdapter;
-    protected WeatherApi mApi;
-    static final String WEATHER_URL="http://api.openweathermap.org/";
-    static final String OPEN_WEATHER_API = "6cb31f00b7e3fd1a17ac5564b24f9729";
+    private final String TAG = getClass().getSimpleName();
+    private WeatherApi mApi;
+    private static final String WEATHER_URL="http://api.openweathermap.org/";
+    private static final String OPEN_WEATHER_API = "6cb31f00b7e3fd1a17ac5564b24f9729";
 
 
-    public WeatherRestAdapter() {
+    WeatherRestAdapter() {
 
-        mRestAdapter = new Retrofit.Builder()
+        Retrofit mRestAdapter = new Retrofit.Builder()
                 .baseUrl(WEATHER_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -30,14 +29,14 @@ public class WeatherRestAdapter {
     }
 
 
-    public void testWeatherApi(String city, Callback<Weather> callback){
+    void testWeatherApi(String city, Callback<Weather> callback){
 
         Log.d(TAG, "testWeatherApi: for city:" + city);
         mApi.getWeatherFromApi(city, OPEN_WEATHER_API).enqueue(callback);
     }
 
 
-    public Weather testWeatherApiSync(String city) {
+    Weather testWeatherApiSync(String city) {
 
         Log.d(TAG, "testWeatherApi: for city:" + city);
         Call<Weather> call = mApi.getWeatherFromApi(city, OPEN_WEATHER_API);

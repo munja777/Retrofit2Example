@@ -2,7 +2,7 @@ package com.example.artur.retrofit2example;
 
 
 
-public class Weather {
+class Weather {
 
     private Coord coord;
     private int cod;
@@ -20,12 +20,12 @@ public class Weather {
     }
 
 
-    public int getCod() { return cod; }
+    int getCod() { return cod; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
 
-    class Main {
+    private class Main {
 
         double temp;
         double pressure;
@@ -38,11 +38,11 @@ public class Weather {
             this.humidity = humidity;
         }
 
-        public double getTemp() { return temp; }
+        double getTemp() { return temp; }
     }
 
 
-    class Coord {
+    private class Coord {
 
         double lat;
         double lon;
@@ -53,27 +53,27 @@ public class Weather {
             this.lon = lon;
         }
 
-        public double getLat() { return lat; }
-        public double getLon() { return lon; }
+        double getLat() { return lat; }
+        double getLon() { return lon; }
     }
 
 
-    class Sys {
+    private class Sys {
 
         String country;
         long sunrise;
         long sunset;
-        public String getCountry() { return country; }
-        public long getSunrise() { return sunrise; }
-        public long getSunset() { return sunset; }
+        String getCountry() { return country; }
+        long getSunrise() { return sunrise; }
+        long getSunset() { return sunset; }
     }
 
 
-    public double getLat() { return coord.getLat(); }
-    public double getLon() { return coord.getLon(); }
-    public double getTemp() { return main.getTemp(); }
-    public String getCountry() { return sys.getCountry(); }
-    public long getSunrise() { return sys.getSunrise(); }
-    public long getSunset() { return sys.getSunset(); }
+    double getLat() { return coord.getLat(); }
+    double getLon() { return coord.getLon(); }
+    double getTemp() { return main.getTemp(); }
+    String getCountry() { return sys.getCountry(); }
+    long getSunrise() { return sys.getSunrise(); }
+    long getSunset() { return sys.getSunset(); }
 
 }

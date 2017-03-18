@@ -66,15 +66,10 @@ public class MainActivity extends AppCompatActivity {
 
         mRetainedAppData.setAppContext(this);
 
-        if (mRetainedAppData.mData != null) {
+        if (mRetainedAppData.mData != null) { updateUXWithWeather(mRetainedAppData.mData); }
 
-            updateUXWithWeather(mRetainedAppData.mData);
-        }
-
-        if  (mRetainedAppData.isFetchInProgress()) {
-
-            mProgressBar.setVisibility(View.VISIBLE);
-        } else { mProgressBar.setVisibility(View.INVISIBLE); }
+        if  (mRetainedAppData.isFetchInProgress()) { mProgressBar.setVisibility(View.VISIBLE); }
+        else { mProgressBar.setVisibility(View.INVISIBLE); }
     }
 
     @Override
@@ -95,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (city.isEmpty()) {
 
-            Toast.makeText(getApplicationContext(),"No city specified.",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"No city specified.", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -110,20 +104,16 @@ public class MainActivity extends AppCompatActivity {
 
         if (city.isEmpty()) {
 
-            Toast.makeText(getApplicationContext(),"No city specified.",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"No city specified.", Toast.LENGTH_LONG).show();
             return;
         }
 
         mRetainedAppData.runRetrofitTestAsync(city);
     }
 
-    public static void hideKeyboard(Activity activity,
+    public static void hideKeyboard(Activity activity, IBinder windowToken) {
 
-                                    IBinder windowToken) {
-
-        InputMethodManager mgr = (InputMethodManager) activity.getSystemService
-                (Context.INPUT_METHOD_SERVICE);
+        InputMethodManager mgr = (InputMethodManager) activity.getSystemService (Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(windowToken, 0);
     }
 
@@ -144,25 +134,33 @@ public class MainActivity extends AppCompatActivity {
                 mSunriseTextView = (TextView) findViewById(R.id.sunrise_id);
                 mSunsetTextView = (TextView) findViewById(R.id.sunset_id);
 
-                if (mRetainedAppData.isFetchInProgress()) { mProgressBar.setVisibility(View.VISIBLE);
-                } else { mProgressBar.setVisibility(View.INVISIBLE); }
+                if (mRetainedAppData.isFetchInProgress()) { mProgressBar.setVisibility(View.VISIBLE); }
+                else { mProgressBar.setVisibility(View.INVISIBLE); }
 
                 Resources res = getResources();
+
                 String textToPrint = res.getString(R.string.city) + data.getName();
                 mCityNameTextView.setText(textToPrint);
+
                 textToPrint = res.getString(R.string.country) + data.getCountry();
                 mCountryNameTextView.setText(textToPrint);
+
                 textToPrint = res.getString(R.string.coordinates) +"(" + data.getLat() + "," + data.getLon() + ")";
                 mCoordsTextView.setText(textToPrint);
+
                 textToPrint = res.getString(R.string.cod) + data.getCod();
                 mCodTextView.setText(textToPrint);
+
                 String tempF = String.format(Locale.UK,"Temperature: %.2f F", (data.getTemp() - 273.15) * 1.8 + 32.00);
                 mTempTextView.setText(tempF);
+
                 DateFormat dfLocalTz = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.UK);
                 Date sunriseTime = new Date(data.getSunrise() * 1000);
                 Date sunsetTime = new Date(data.getSunset() * 1000);
+
                 textToPrint = res.getString(R.string.sunrise) + dfLocalTz.format(sunriseTime);
                 mSunriseTextView.setText(textToPrint);
+
                 textToPrint = res.getString(R.string.sunset) + dfLocalTz.format(sunsetTime);
                 mSunsetTextView.setText(textToPrint);
             }
@@ -172,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
     private static class RetainedAppData {
 
         private WeakReference<MainActivity> mActivityRef;
-        protected final String TAG = "RTD";
+        final String TAG = "RTD";
         private Weather mData;
         private AtomicBoolean mInProgress = new AtomicBoolean(false);
         private WeatherRestAdapter mWeatherRestAdapter;
@@ -184,11 +182,11 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
 
                     Weather data = response.body();
+
                     Log.d(TAG, "Async success: Weather: Name:" + data.getName() + ", cod:" + data.getCod()
-                            + ",Coord:  (" + data.getLat() + "," + data.getLon()
-                            + "), Temp:" + data.getTemp()
-                            + "\nSunset:" + data.getSunset() + ", " + data.getSunrise()
-                            + ", Country:" + data.getCountry());
+                            + ",Coord:  (" + data.getLat() + "," + data.getLon() + "), Temp:" + data.getTemp()
+                            + "\nSunset:" + data.getSunset() + ", " + data.getSunrise() + ", Country:" + data.getCountry());
+
                     mData = data;
 
                     if (mActivityRef.get() != null) {
@@ -198,9 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void run() {
-
-                                mActivityRef.get().mProgressBar = (ProgressBar) mActivityRef.get().
-                                        findViewById(R.id.progress_bar_id);
+                                mActivityRef.get().mProgressBar = (ProgressBar) mActivityRef.get().findViewById(R.id.progress_bar_id);
                                 mActivityRef.get().mProgressBar.setVisibility(View.INVISIBLE);
                             }
                         });
@@ -219,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<Weather> call, Throwable t) {
 
                 mInProgress.set(false);
+
                 if (mActivityRef.get() != null) {
 
                     mActivityRef.get().runOnUiThread(new Runnable() {
@@ -226,8 +223,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            mActivityRef.get().mProgressBar = (ProgressBar) mActivityRef.get().
-                                    findViewById(R.id.progress_bar_id);
+                            mActivityRef.get().mProgressBar = (ProgressBar) mActivityRef.get().findViewById(R.id.progress_bar_id);
                             mActivityRef.get().mProgressBar.setVisibility(View.INVISIBLE);
                         }
                     });
@@ -235,47 +231,35 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        public void runRetrofitTestAsync (final String city) {
+        void runRetrofitTestAsync(final String city) {
 
             if ( (mActivityRef.get() != null) && (mInProgress.get())) {
 
-                Toast.makeText(mActivityRef.get(),"Weather fetch in progress.",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivityRef.get(),"Weather fetch in progress.", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            if (mWeatherRestAdapter == null)
-                mWeatherRestAdapter = new WeatherRestAdapter();
+            if (mWeatherRestAdapter == null) mWeatherRestAdapter = new WeatherRestAdapter();
 
-            if (mActivityRef.get() != null) {
-                mActivityRef.get().mProgressBar.setVisibility(View.VISIBLE);
-            }
+            if (mActivityRef.get() != null) { mActivityRef.get().mProgressBar.setVisibility(View.VISIBLE); }
 
             try {
-
                 mInProgress.set(true);
                 mWeatherRestAdapter.testWeatherApi(city, mWeatherCallback);
-            } catch (Exception e) {
-
-                Log.d(TAG, "Thread sleep error" + e);
-            }
+            } catch (Exception e) { Log.d(TAG, "Thread sleep error" + e); }
         }
 
-        public void runRetrofitTestSync (final String city) {
+        void runRetrofitTestSync(final String city) {
 
             if ((mActivityRef.get() != null) && (mInProgress.get())) {
 
-                Toast.makeText(mActivityRef.get(),"Weather fetch in progress.",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivityRef.get(),"Weather fetch in progress.", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            if (mActivityRef.get() != null) {
-                mActivityRef.get().mProgressBar.setVisibility(View.VISIBLE);
-            }
+            if (mActivityRef.get() != null) { mActivityRef.get().mProgressBar.setVisibility(View.VISIBLE); }
 
-            if (mWeatherRestAdapter == null)
-                mWeatherRestAdapter = new WeatherRestAdapter();
+            if (mWeatherRestAdapter == null) mWeatherRestAdapter = new WeatherRestAdapter();
 
             mInProgress.set(true);
 
@@ -292,16 +276,13 @@ public class MainActivity extends AppCompatActivity {
                         if (data != null) {
 
                             Log.d(TAG, "Sync: Data: cod:" + data.getName() + ", cod:" + data.getCod()
-                                    + ",Coord: (" + data.getLat() + "," + data.getLon()
-                                    + "), Temp:" + data.getTemp()
+                                    + ",Coord: (" + data.getLat() + "," + data.getLon() + "), Temp:" + data.getTemp()
                                     + "\nSunset:" + data.getSunset() + ", " + data.getSunrise()
                                     + ", Country:" + data.getCountry());
 
                             mData = data;
 
-                            if (mActivityRef.get() != null) {
-                                mActivityRef.get().updateUXWithWeather(mData);
-                            }
+                            if (mActivityRef.get() != null) { mActivityRef.get().updateUXWithWeather(mData); }
                         } else { Log.e(TAG, "Sync: no data fetched"); }
 
                     } catch (Exception ex) {
@@ -315,13 +296,13 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
 
-                                    mActivityRef.get().mProgressBar = (ProgressBar) mActivityRef.get().
-                                            findViewById(R.id.progress_bar_id);
+                                    mActivityRef.get().mProgressBar = (ProgressBar) mActivityRef.get().findViewById(R.id.progress_bar_id);
                                     mActivityRef.get().mProgressBar.setVisibility(View.INVISIBLE);
                                 }
                             });
                         }
                     } finally { mInProgress.set(false); }
+
                 }
             }).start();
         }
